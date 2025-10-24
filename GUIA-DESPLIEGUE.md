@@ -134,3 +134,4 @@ Una vez tengas la URL:
 - Si cambias de dispositivo, necesitas hacer un nuevo control
 
 **Si quieres sincronización real**, puedo ayudarte a agregar Firebase para que tus controles se guarden en la nube y sean accesibles desde cualquier dispositivo.
+

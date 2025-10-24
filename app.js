@@ -9,6 +9,31 @@ class StockControlApp {
         this.setupEventListeners();
         this.updateDateInfo();
         this.showScreen('home');
+        this.initTheme();
+    }
+
+    initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.classList.add(savedTheme + '-theme');
+        this.updateThemeIcons(savedTheme);
+    }
+
+    toggleTheme() {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.body.classList.remove('dark-theme', 'light-theme');
+        document.body.classList.add(newTheme + '-theme');
+        
+        localStorage.setItem('theme', newTheme);
+        this.updateThemeIcons(newTheme);
+    }
+
+    updateThemeIcons(theme) {
+        const icons = document.querySelectorAll('.theme-toggle-btn i');
+        icons.forEach(icon => {
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        });
     }
 
     loadAppState() {
@@ -17,6 +42,11 @@ class StockControlApp {
     }
 
     setupEventListeners() {
+        // Toggle de tema
+        document.querySelectorAll('.theme-toggle-btn, #theme-toggle, #theme-toggle-categories, #theme-toggle-checklist, #theme-toggle-summary').forEach(btn => {
+            btn.addEventListener('click', () => this.toggleTheme());
+        });
+
         // Botones de navegación principal
         document.getElementById('start-control').addEventListener('click', () => {
             this.startNewControl();
@@ -120,9 +150,12 @@ class StockControlApp {
             const categoryCard = document.createElement('div');
             categoryCard.className = 'category-card';
             categoryCard.innerHTML = `
-                <i class="${category.icon}"></i>
+                <div class="category-icon">
+                    <i class="${category.icon}"></i>
+                </div>
                 <h3>${category.name}</h3>
                 <p>${category.description}</p>
+                <span class="category-count">${category.items.length} items</span>
             `;
             
             categoryCard.addEventListener('click', () => {
@@ -147,13 +180,20 @@ class StockControlApp {
         const categoryTitle = document.getElementById('category-title');
         const itemsList = document.getElementById('items-list');
         const progressText = document.getElementById('progress-text');
+        const progressBarFill = document.getElementById('progress-bar-fill');
 
         categoryTitle.textContent = AppState.currentCategory.name;
         
         // Calcular progreso
-        const totalCategories = APP_DATA.categories.length;
-        const currentIndex = APP_DATA.categories.findIndex(cat => cat.id === AppState.currentCategory.id);
-        progressText.textContent = `${currentIndex + 1}/${totalCategories}`;
+        const totalItems = AppState.currentCategory.items.length;
+        const completedItems = AppState.currentCategory.items.filter(item => 
+            AppState.currentControl.items[item] !== undefined
+        ).length;
+        
+        const progressPercent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+        
+        progressText.textContent = `${completedItems}/${totalItems}`;
+        progressBarFill.style.width = progressPercent + '%';
 
         itemsList.innerHTML = '';
 
@@ -193,11 +233,37 @@ class StockControlApp {
                     // Guardar estado
                     AppState.currentControl.items[item] = state;
                     Storage.saveAppState();
+                    
+                    // Actualizar progreso
+                    this.updateProgress();
                 });
             });
 
             itemsList.appendChild(itemCard);
         });
+        
+        // Actualizar progreso inicial
+        this.updateProgress();
+    }
+
+    updateProgress() {
+        if (!AppState.currentCategory) return;
+        
+        const itemsList = document.getElementById('items-list');
+        const progressText = document.getElementById('progress-text');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        
+        if (!itemsList || !progressText || !progressBarFill) return;
+        
+        const totalItems = AppState.currentCategory.items.length;
+        const completedItems = AppState.currentCategory.items.filter(item => 
+            AppState.currentControl.items[item] !== undefined
+        ).length;
+        
+        const progressPercent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+        
+        progressText.textContent = `${completedItems}/${totalItems}`;
+        progressBarFill.style.width = progressPercent + '%';
     }
 
     nextCategory() {
@@ -224,11 +290,7 @@ class StockControlApp {
     }
 
     renderSummary() {
-        const summaryTitle = document.getElementById('summary-title');
-        const missingItems = document.getElementById('missing-items');
-
-        summaryTitle.textContent = `${AppState.currentControl.shift} ${AppState.currentControl.date}`;
-        missingItems.innerHTML = '';
+        const summaryResults = document.getElementById('summary-results');
 
         // Separar items por estado
         const pocoItems = Object.entries(AppState.currentControl.items)
@@ -239,48 +301,65 @@ class StockControlApp {
             .filter(([item, state]) => state === 'falta')
             .map(([item]) => item);
 
+        summaryResults.innerHTML = '';
+
         if (pocoItems.length === 0 && faltaItems.length === 0) {
-            missingItems.innerHTML = `
-                <div class="missing-item" style="background: #f0f9ff; border-left-color: #00b894;">
-                    <i class="fas fa-check-circle" style="color: #00b894;"></i>
-                    <span>¡Excelente! No hay faltantes en este control.</span>
+            summaryResults.innerHTML = `
+                <div class="card summary-card success">
+                    <div class="card-content">
+                        <div class="success-card">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <h3 class="success-title">¡Todo en orden!</h3>
+                                <p class="success-description">No hay productos faltantes en este control</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
         } else {
             // Mostrar items que faltan primero
             if (faltaItems.length > 0) {
-                const sectionTitle = document.createElement('div');
-                sectionTitle.style.cssText = 'font-weight: bold; font-size: 1.1rem; color: #333; margin: 1rem 0 0.5rem 0; padding-left: 0.5rem;';
-                sectionTitle.textContent = '1. NO HAY:';
-                missingItems.appendChild(sectionTitle);
-
-                faltaItems.forEach(item => {
-                    const missingItem = document.createElement('div');
-                    missingItem.className = 'missing-item falta';
-                    missingItem.innerHTML = `
-                        <i class="fas fa-times-circle"></i>
-                        <span>${item}</span>
-                    `;
-                    missingItems.appendChild(missingItem);
-                });
+                const card = document.createElement('div');
+                card.className = 'card summary-card alert';
+                card.innerHTML = `
+                    <div class="summary-header">
+                        <div class="summary-number">1</div>
+                        <div class="summary-title">NO HAY</div>
+                    </div>
+                    <ul class="summary-list">
+                        ${faltaItems.map(item => `
+                            <li class="summary-item">
+                                <span class="summary-bullet">•</span>
+                                <span>${item}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                summaryResults.appendChild(card);
             }
 
             // Luego mostrar items que hay poco
             if (pocoItems.length > 0) {
-                const sectionTitle = document.createElement('div');
-                sectionTitle.style.cssText = 'font-weight: bold; font-size: 1.1rem; color: #333; margin: 1rem 0 0.5rem 0; padding-left: 0.5rem;';
-                sectionTitle.textContent = '2. HAY POCO:';
-                missingItems.appendChild(sectionTitle);
-
-                pocoItems.forEach(item => {
-                    const missingItem = document.createElement('div');
-                    missingItem.className = 'missing-item poco';
-                    missingItem.innerHTML = `
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>${item}</span>
-                    `;
-                    missingItems.appendChild(missingItem);
-                });
+                const card = document.createElement('div');
+                card.className = 'card summary-card warning';
+                card.innerHTML = `
+                    <div class="summary-header">
+                        <div class="summary-number">2</div>
+                        <div class="summary-title">HAY POCO</div>
+                    </div>
+                    <ul class="summary-list">
+                        ${pocoItems.map(item => `
+                            <li class="summary-item">
+                                <span class="summary-bullet">•</span>
+                                <span>${item}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                summaryResults.appendChild(card);
             }
         }
     }
@@ -299,25 +378,33 @@ class StockControlApp {
             return;
         }
 
-        let listText = `Faltantes - ${AppState.currentControl.shift} ${AppState.currentControl.date}\n\n`;
+        let listText = `📋 CONTROL DE STOCK\n`;
+        listText += `📅 Fecha: ${AppState.currentControl.date}\n`;
+        listText += `🕐 Turno: ${AppState.currentControl.shift}\n\n`;
         
         if (faltaItems.length > 0) {
-            listText += `1. NO HAY:\n`;
+            listText += `1. ❌ NO HAY:\n`;
             faltaItems.forEach(item => {
-                listText += `   - ${item}\n`;
+                listText += `   • ${item}\n`;
             });
             listText += `\n`;
         }
         
         if (pocoItems.length > 0) {
-            listText += `2. HAY POCO:\n`;
+            listText += `2. ⚠️ HAY POCO:\n`;
             pocoItems.forEach(item => {
-                listText += `   - ${item}\n`;
+                listText += `   • ${item}\n`;
             });
         }
-        
+
         navigator.clipboard.writeText(listText).then(() => {
-            alert('Lista copiada al portapapeles');
+            const copyText = document.getElementById('copy-text');
+            if (copyText) {
+                copyText.textContent = '¡Copiado!';
+                setTimeout(() => {
+                    copyText.textContent = 'Copiar lista';
+                }, 2000);
+            }
         }).catch(() => {
             // Fallback para navegadores que no soportan clipboard API
             const textArea = document.createElement('textarea');
@@ -326,7 +413,13 @@ class StockControlApp {
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            alert('Lista copiada al portapapeles');
+            const copyText = document.getElementById('copy-text');
+            if (copyText) {
+                copyText.textContent = '¡Copiado!';
+                setTimeout(() => {
+                    copyText.textContent = 'Copiar lista';
+                }, 2000);
+            }
         });
     }
 
@@ -344,20 +437,22 @@ class StockControlApp {
             return;
         }
 
-        let message = `*Faltantes - ${AppState.currentControl.shift} ${AppState.currentControl.date}*\n\n`;
+        let message = `📋 CONTROL DE STOCK\n`;
+        message += `📅 Fecha: ${AppState.currentControl.date}\n`;
+        message += `🕐 Turno: ${AppState.currentControl.shift}\n\n`;
         
         if (faltaItems.length > 0) {
-            message += `*1. NO HAY:*\n`;
+            message += `1. ❌ NO HAY:\n`;
             faltaItems.forEach(item => {
-                message += `   - ${item}\n`;
+                message += `   • ${item}\n`;
             });
             message += `\n`;
         }
         
         if (pocoItems.length > 0) {
-            message += `*2. HAY POCO:*\n`;
+            message += `2. ⚠️ HAY POCO:\n`;
             pocoItems.forEach(item => {
-                message += `   - ${item}\n`;
+                message += `   • ${item}\n`;
             });
         }
 

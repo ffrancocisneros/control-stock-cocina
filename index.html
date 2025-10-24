@@ -7,33 +7,64 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="light-theme">
     <div id="app">
         <!-- Pantalla de Inicio -->
         <div id="home-screen" class="screen active">
             <header class="app-header">
-                <h1><i class="fas fa-utensils"></i> Control de Stock</h1>
-                <div class="date-info">
-                    <span id="current-date"></span>
-                    <span id="current-shift"></span>
+                <div class="header-content">
+                    <div class="header-title">
+                        <div class="header-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h1>Control de Stock</h1>
+                    </div>
+                    <button id="theme-toggle" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                    </button>
                 </div>
             </header>
             
             <main class="main-content">
-                <div class="welcome-section">
-                    <h2>¡Bienvenido!</h2>
-                    <p>Gestiona el inventario de tu cocina de manera eficiente</p>
+                <!-- Info Card -->
+                <div class="card info-card">
+                    <div class="card-content">
+                        <div class="info-header">
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span id="current-date"></span>
+                            </div>
+                            <div class="shift-badge">
+                                Turno <span id="current-shift"></span>
+                            </div>
+                        </div>
+                        <p class="info-description">
+                            Bienvenido al sistema de control de inventario. Registra el estado de los productos por categoría y genera
+                            reportes automáticos de faltantes.
+                        </p>
+                    </div>
                 </div>
-                
+
+                <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <button id="start-control" class="btn btn-primary">
-                        <i class="fas fa-play"></i>
-                        Comenzar control de stock
+                    <button id="start-control" class="btn btn-primary btn-large">
+                        <div class="btn-content">
+                            <i class="fas fa-clipboard-list"></i>
+                            <div class="btn-text">
+                                <div class="btn-title">Comenzar control de stock</div>
+                                <div class="btn-subtitle">Registrar estado de productos</div>
+                            </div>
+                        </div>
                     </button>
                     
-                    <button id="view-previous" class="btn btn-secondary">
-                        <i class="fas fa-history"></i>
-                        Ver faltantes del control anterior
+                    <button id="view-previous" class="btn btn-secondary btn-large">
+                        <div class="btn-content">
+                            <i class="fas fa-utensils"></i>
+                            <div class="btn-text">
+                                <div class="btn-title">Ver faltantes del control anterior</div>
+                                <div class="btn-subtitle">Revisar último resumen</div>
+                            </div>
+                        </div>
                     </button>
                 </div>
             </main>
@@ -42,10 +73,17 @@
         <!-- Pantalla de Selección de Categorías -->
         <div id="categories-screen" class="screen">
             <header class="app-header">
-                <button id="back-to-home" class="btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h1>Seleccionar Categoría</h1>
+                <div class="header-content">
+                    <div class="header-left">
+                        <button id="back-to-home" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1>Seleccionar Categoría</h1>
+                    </div>
+                    <button id="theme-toggle-categories" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
             </header>
             
             <main class="main-content">
@@ -58,12 +96,22 @@
         <!-- Pantalla de Checklist por Categoría -->
         <div id="checklist-screen" class="screen">
             <header class="app-header">
-                <button id="back-to-categories" class="btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h1 id="category-title">Categoría</h1>
-                <div class="progress-info">
-                    <span id="progress-text">0/0</span>
+                <div class="header-content">
+                    <div class="header-left">
+                        <button id="back-to-categories" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 id="category-title">Categoría</h1>
+                    </div>
+                    <button id="theme-toggle-checklist" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <span id="progress-text" class="progress-text">0/0</span>
                 </div>
             </header>
             
@@ -75,7 +123,7 @@
                 <div class="navigation-buttons">
                     <button id="next-category" class="btn btn-primary">
                         <i class="fas fa-arrow-right"></i>
-                        Siguiente categoría
+                        Ver Resumen Final
                     </button>
                 </div>
             </main>
@@ -84,37 +132,57 @@
         <!-- Pantalla de Resumen Final -->
         <div id="summary-screen" class="screen">
             <header class="app-header">
-                <h1>Resumen Final</h1>
-                <div class="date-info">
-                    <span id="summary-date"></span>
-                    <span id="summary-shift"></span>
+                <div class="header-content">
+                    <div class="header-left">
+                        <button id="back-to-summary" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1>Resumen Final</h1>
+                    </div>
+                    <button id="theme-toggle-summary" class="theme-toggle-btn">
+                        <i class="fas fa-sun"></i>
+                    </button>
                 </div>
             </header>
             
             <main class="main-content">
-                <div class="summary-section">
-                    <h2>Faltantes - <span id="summary-title"></span></h2>
-                    
-                    <div id="missing-items" class="missing-items">
-                        <!-- Los items faltantes se mostrarán aquí -->
+                <!-- Info Card -->
+                <div class="card info-card">
+                    <div class="card-content">
+                        <div class="info-grid">
+                            <div class="info-col">
+                                <p class="info-label">Fecha</p>
+                                <p class="info-value" id="summary-date"></p>
+                            </div>
+                            <div class="info-col">
+                                <p class="info-label">Turno</p>
+                                <p class="info-value" id="summary-shift"></p>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <!-- Results -->
+                <div id="summary-results">
+                    <!-- Los resultados se mostrarán aquí -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="copy-list" class="btn btn-primary btn-large">
+                        <i class="fas fa-copy"></i>
+                        <span id="copy-text">Copiar lista</span>
+                    </button>
                     
-                    <div class="summary-actions">
-                        <button id="copy-list" class="btn btn-secondary">
-                            <i class="fas fa-copy"></i>
-                            Copiar lista
-                        </button>
-                        
-                        <button id="share-whatsapp" class="btn btn-success">
-                            <i class="fab fa-whatsapp"></i>
-                            Compartir por WhatsApp
-                        </button>
-                        
-                        <button id="new-control" class="btn btn-primary">
-                            <i class="fas fa-redo"></i>
-                            Nuevo control
-                        </button>
-                    </div>
+                    <button id="share-whatsapp" class="btn btn-secondary btn-large">
+                        <i class="fab fa-whatsapp"></i>
+                        Compartir por WhatsApp
+                    </button>
+                    
+                    <button id="new-control" class="btn btn-secondary btn-large">
+                        <i class="fas fa-redo"></i>
+                        Nuevo control
+                    </button>
                 </div>
             </main>
         </div>
@@ -124,3 +192,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
