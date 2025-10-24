@@ -38,7 +38,7 @@ const APP_DATA = {
         {
             id: 'pastas',
             name: 'Pastas',
-            icon: 'fas fa-pasta',
+            icon: 'fas fa-utensils',
             description: 'Pastas y rellenos',
             items: [
                 'Tallarines',
@@ -71,7 +71,7 @@ const APP_DATA = {
         {
             id: 'frituras',
             name: 'Frituras',
-            icon: 'fas fa-french-fries',
+            icon: 'fas fa-hamburger',
             description: 'Productos para freír',
             items: [
                 'Papas fritas (congeladas)',
