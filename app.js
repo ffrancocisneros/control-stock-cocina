@@ -181,8 +181,20 @@ class StockControlApp {
         const itemsList = document.getElementById('items-list');
         const progressText = document.getElementById('progress-text');
         const progressBarFill = document.getElementById('progress-bar-fill');
+        const nextCategoryBtn = document.getElementById('next-category');
 
         categoryTitle.textContent = AppState.currentCategory.name;
+        
+        // Determinar si es la última categoría
+        const currentIndex = APP_DATA.categories.findIndex(cat => cat.id === AppState.currentCategory.id);
+        const isLastCategory = currentIndex === APP_DATA.categories.length - 1;
+        
+        // Actualizar texto del botón
+        if (nextCategoryBtn) {
+            nextCategoryBtn.innerHTML = isLastCategory 
+                ? '<i class="fas fa-check"></i> Ver Resumen Final'
+                : '<i class="fas fa-arrow-right"></i> Siguiente categoría';
+        }
         
         // Calcular progreso
         const totalItems = AppState.currentCategory.items.length;

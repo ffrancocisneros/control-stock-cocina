@@ -24,7 +24,7 @@ const APP_DATA = {
             description: 'Carnes y proteínas',
             items: [
                 'Hamburguesas',
-                'Bondiola',
+                'Bondiola (carne)',
                 'Lomito',
                 'Milanesa de carne',
                 'Milanesa de pollo',
