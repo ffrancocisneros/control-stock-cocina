@@ -338,6 +338,18 @@ class StockControlApp {
     }
 
     finishControl() {
+        // Validar que todos los items de todas las categorías tengan estado seleccionado
+        const missingItems = this.getMissingItems();
+        if (missingItems.length > 0) {
+            let message = 'Por favor, completa todos los items antes de ver el resumen final.\n\n';
+            message += `Items sin completar:\n`;
+            missingItems.forEach(item => {
+                message += `- ${item.item} (${item.category})\n`;
+            });
+            alert(message);
+            return;
+        }
+
         // Guardar control anterior
         if (AppState.currentControl.items && Object.keys(AppState.currentControl.items).length > 0) {
             Storage.saveControl(AppState.currentControl);
@@ -345,6 +357,30 @@ class StockControlApp {
         }
         
         this.showScreen('summary');
+    }
+
+    validateAllCategories() {
+        // Verificar que todos los items de todas las categorías tengan estado
+        for (let category of APP_DATA.categories) {
+            for (let item of category.items) {
+                if (!AppState.currentControl.items[item]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    getMissingItems() {
+        const missing = [];
+        for (let category of APP_DATA.categories) {
+            for (let item of category.items) {
+                if (!AppState.currentControl.items[item]) {
+                    missing.push({ item, category: category.name });
+                }
+            }
+        }
+        return missing;
     }
 
     renderSummary() {
