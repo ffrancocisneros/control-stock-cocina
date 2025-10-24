@@ -65,6 +65,10 @@ class StockControlApp {
             this.showScreen('categories');
         });
 
+        document.getElementById('back-to-summary').addEventListener('click', () => {
+            this.backToChecklist();
+        });
+
         document.getElementById('next-category').addEventListener('click', () => {
             this.nextCategory();
         });
@@ -128,6 +132,7 @@ class StockControlApp {
         };
         
         AppState.currentCategoryIndex = 0;
+        AppState.lastCategoryId = null;
         this.showScreen('categories');
     }
 
@@ -169,6 +174,10 @@ class StockControlApp {
         const category = APP_DATA.categories.find(cat => cat.id === categoryId);
         if (category) {
             AppState.currentCategory = category;
+            // Guardar la categoría seleccionada como última visitada si es la primera vez
+            if (!AppState.lastCategoryId) {
+                AppState.lastCategoryId = categoryId;
+            }
             this.showScreen('checklist');
         }
     }
@@ -278,9 +287,18 @@ class StockControlApp {
     }
 
     nextCategory() {
+        // Validar que todos los items estén seleccionados
+        if (!this.validateCurrentCategory()) {
+            alert('Por favor, selecciona un estado para todos los items antes de continuar');
+            return;
+        }
+
         const currentIndex = APP_DATA.categories.findIndex(cat => cat.id === AppState.currentCategory.id);
         
         if (currentIndex < APP_DATA.categories.length - 1) {
+            // Guardar la categoría actual como última visitada
+            AppState.lastCategoryId = AppState.currentCategory.id;
+            
             // Ir a la siguiente categoría
             AppState.currentCategory = APP_DATA.categories[currentIndex + 1];
             this.showScreen('checklist');
@@ -288,6 +306,35 @@ class StockControlApp {
             // Terminar el control
             this.finishControl();
         }
+    }
+
+    validateCurrentCategory() {
+        if (!AppState.currentCategory) return false;
+        
+        const items = AppState.currentCategory.items;
+        for (let item of items) {
+            if (!AppState.currentControl.items[item]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    backToChecklist() {
+        // Guardar la última categoría revisada para poder volver
+        if (!AppState.lastCategoryId) {
+            // Si no hay última categoría guardada, ir a la primera
+            AppState.currentCategory = APP_DATA.categories[0];
+        } else {
+            // Buscar la última categoría revisada
+            const lastCategory = APP_DATA.categories.find(cat => cat.id === AppState.lastCategoryId);
+            if (lastCategory) {
+                AppState.currentCategory = lastCategory;
+            } else {
+                AppState.currentCategory = APP_DATA.categories[0];
+            }
+        }
+        this.showScreen('checklist');
     }
 
     finishControl() {

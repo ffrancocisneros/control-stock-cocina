@@ -218,7 +218,8 @@ const AppState = {
         shift: '',
         items: {}
     },
-    previousControl: null
+    previousControl: null,
+    lastCategoryId: null
 };
 
 // Utilidades para fechas y turnos
