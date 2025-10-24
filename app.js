@@ -91,7 +91,6 @@ class StockControlApp {
         document.getElementById('current-shift').textContent = currentShift;
         
         document.getElementById('summary-date').textContent = currentDate;
-        document.getElementById('summary-shift').textContent = currentShift;
     }
 
     showScreen(screenName) {
@@ -390,22 +389,21 @@ class StockControlApp {
             return;
         }
 
-        let listText = `📋 CONTROL DE STOCK\n`;
-        listText += `📅 Fecha: ${AppState.currentControl.date}\n`;
-        listText += `🕐 Turno: ${AppState.currentControl.shift}\n\n`;
+        let listText = `CONTROL DE STOCK\n`;
+        listText += `Fecha: ${AppState.currentControl.date}\n\n`;
         
         if (faltaItems.length > 0) {
-            listText += `1. ❌ NO HAY:\n`;
+            listText += `1. NO HAY:\n`;
             faltaItems.forEach(item => {
-                listText += `   • ${item}\n`;
+                listText += `   - ${item}\n`;
             });
             listText += `\n`;
         }
         
         if (pocoItems.length > 0) {
-            listText += `2. ⚠️ HAY POCO:\n`;
+            listText += `2. HAY POCO:\n`;
             pocoItems.forEach(item => {
-                listText += `   • ${item}\n`;
+                listText += `   - ${item}\n`;
             });
         }
 
@@ -449,22 +447,21 @@ class StockControlApp {
             return;
         }
 
-        let message = `📋 CONTROL DE STOCK\n`;
-        message += `📅 Fecha: ${AppState.currentControl.date}\n`;
-        message += `🕐 Turno: ${AppState.currentControl.shift}\n\n`;
+        let message = `CONTROL DE STOCK\n`;
+        message += `Fecha: ${AppState.currentControl.date}\n\n`;
         
         if (faltaItems.length > 0) {
-            message += `1. ❌ NO HAY:\n`;
+            message += `1. NO HAY:\n`;
             faltaItems.forEach(item => {
-                message += `   • ${item}\n`;
+                message += `   - ${item}\n`;
             });
             message += `\n`;
         }
         
         if (pocoItems.length > 0) {
-            message += `2. ⚠️ HAY POCO:\n`;
+            message += `2. HAY POCO:\n`;
             pocoItems.forEach(item => {
-                message += `   • ${item}\n`;
+                message += `   - ${item}\n`;
             });
         }
 
