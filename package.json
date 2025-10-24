@@ -1,0 +1,29 @@
+{
+  "name": "control-stock-cocina",
+  "version": "1.0.0",
+  "description": "Aplicación web para control de stock en cocinas gastronómicas",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 3000"
+  },
+  "keywords": [
+    "stock",
+    "inventario",
+    "cocina",
+    "gastronomia",
+    "checklist"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/control-stock-cocina.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/control-stock-cocina/issues"
+  },
+  "homepage": "https://github.com/tu-usuario/control-stock-cocina#readme"
+}

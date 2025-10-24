@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Stock - Cocina</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Pantalla de Inicio -->
+        <div id="home-screen" class="screen active">
+            <header class="app-header">
+                <h1><i class="fas fa-utensils"></i> Control de Stock</h1>
+                <div class="date-info">
+                    <span id="current-date"></span>
+                    <span id="current-shift"></span>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="welcome-section">
+                    <h2>¡Bienvenido!</h2>
+                    <p>Gestiona el inventario de tu cocina de manera eficiente</p>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="start-control" class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Comenzar control de stock
+                    </button>
+                    
+                    <button id="view-previous" class="btn btn-secondary">
+                        <i class="fas fa-history"></i>
+                        Ver faltantes del control anterior
+                    </button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Pantalla de Selección de Categorías -->
+        <div id="categories-screen" class="screen">
+            <header class="app-header">
+                <button id="back-to-home" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1>Seleccionar Categoría</h1>
+            </header>
+            
+            <main class="main-content">
+                <div id="categories-list" class="categories-grid">
+                    <!-- Las categorías se cargarán dinámicamente -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Pantalla de Checklist por Categoría -->
+        <div id="checklist-screen" class="screen">
+            <header class="app-header">
+                <button id="back-to-categories" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 id="category-title">Categoría</h1>
+                <div class="progress-info">
+                    <span id="progress-text">0/0</span>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div id="items-list" class="items-list">
+                    <!-- Los items se cargarán dinámicamente -->
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button id="next-category" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Siguiente categoría
+                    </button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Pantalla de Resumen Final -->
+        <div id="summary-screen" class="screen">
+            <header class="app-header">
+                <h1>Resumen Final</h1>
+                <div class="date-info">
+                    <span id="summary-date"></span>
+                    <span id="summary-shift"></span>
+                </div>
+            </header>
+            
+            <main class="main-content">
+                <div class="summary-section">
+                    <h2>Faltantes - <span id="summary-title"></span></h2>
+                    
+                    <div id="missing-items" class="missing-items">
+                        <!-- Los items faltantes se mostrarán aquí -->
+                    </div>
+                    
+                    <div class="summary-actions">
+                        <button id="copy-list" class="btn btn-secondary">
+                            <i class="fas fa-copy"></i>
+                            Copiar lista
+                        </button>
+                        
+                        <button id="share-whatsapp" class="btn btn-success">
+                            <i class="fab fa-whatsapp"></i>
+                            Compartir por WhatsApp
+                        </button>
+                        
+                        <button id="new-control" class="btn btn-primary">
+                            <i class="fas fa-redo"></i>
+                            Nuevo control
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
