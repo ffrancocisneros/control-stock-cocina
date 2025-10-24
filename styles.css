@@ -785,6 +785,7 @@ body {
 /* Buscador de Items */
 .search-container {
     margin-bottom: 2rem;
+    position: relative;
 }
 
 .search-box {
@@ -839,7 +840,7 @@ body {
 
 .search-results {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.5rem);
     left: 0;
     right: 0;
     background: var(--card);
@@ -849,7 +850,6 @@ body {
     max-height: 300px;
     overflow-y: auto;
     z-index: 1000;
-    margin-top: 0.5rem;
 }
 
 .search-result-item {
