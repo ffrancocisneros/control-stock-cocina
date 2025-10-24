@@ -440,6 +440,8 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .item-card:hover {
@@ -450,6 +452,9 @@ body {
     font-weight: 500;
     color: var(--foreground);
     flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .item-options {

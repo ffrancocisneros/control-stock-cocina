@@ -9,7 +9,7 @@ const APP_DATA = {
             items: [
                 'Pan Rustico',
                 'Pan de sanguche de lomito/milanesa/bondiola',
-                'Pan redonditos individuales (se envían 3 por mesa)',
+                'Pan redonditos individuales',
                 'Pan de miga',
                 'Pan de hamburguesa',
                 'Pizzas',
@@ -29,7 +29,7 @@ const APP_DATA = {
                 'Milanesa de carne',
                 'Milanesa de pollo',
                 'Muslito de pollo',
-                'Carne picada (para hamburguesas, relleno de empanadas o bolognesa)',
+                'Carne picada',
                 'Pechuga de pollo',
                 'Pollo desmenuzado',
                 'Pata muslo'
@@ -45,8 +45,6 @@ const APP_DATA = {
                 'Sorrentinos de bondiola',
                 'Sorrentinos de 4 quesos',
                 'Sorrentinos de calabaza',
-                'Canelones de verdura',
-                'Lasagna',
                 'Raviolones de verdura'
             ]
         },
@@ -76,11 +74,11 @@ const APP_DATA = {
             icon: 'fas fa-french-fries',
             description: 'Productos para freír',
             items: [
-                'Papas fritas (congeladas, vienen en caja de 4 bolsas de 2,5kg cada una)',
-                'Bastones de muzzarella (congelados, en bolsa)',
-                'Nuggets (congelados, en bolsa)',
-                'Rabas (congelados, en bolsa)',
-                'Papas rústicas (bolsas de papa natural x 20kg)'
+                'Papas fritas (congeladas)',
+                'Bastones de muzzarella',
+                'Nuggets',
+                'Rabas',
+                'Papas naturales para rústicas'
             ]
         },
         {
@@ -92,8 +90,7 @@ const APP_DATA = {
                 'Relleno de cortada a cuchillo',
                 'Relleno de verdura/acelga',
                 'Relleno de carne picada salada',
-                'Relleno de osobuco',
-                'Relleno de jamón y queso'
+                'Relleno de osobuco'
             ]
         },
         {
@@ -143,7 +140,7 @@ const APP_DATA = {
             icon: 'fas fa-pizza-slice',
             description: 'Ingredientes para pizza',
             items: [
-                'Salsa de tomate (caja de puré de tomate)',
+                'Caja de puré de tomate',
                 'Provenzal',
                 'Huevo duro',
                 'Cebolla caramelizada',
@@ -160,7 +157,7 @@ const APP_DATA = {
                 'Panqueques',
                 'Budin de pan',
                 'Bombón escocés',
-                'Dulce de leche para los postres'
+                'Dulce de leche'
             ]
         },
         {
