@@ -85,6 +85,15 @@ class StockControlApp {
         document.getElementById('new-control').addEventListener('click', () => {
             this.startNewControl();
         });
+
+        // Event listeners para el buscador
+        document.getElementById('item-search').addEventListener('input', (e) => {
+            this.handleSearch(e.target.value);
+        });
+
+        document.getElementById('clear-search').addEventListener('click', () => {
+            this.clearSearch();
+        });
     }
 
     updateDateInfo() {
@@ -149,6 +158,9 @@ class StockControlApp {
     renderCategories() {
         const categoriesList = document.getElementById('categories-list');
         categoriesList.innerHTML = '';
+
+        // Limpiar búsqueda al mostrar categorías
+        this.clearSearch();
 
         APP_DATA.categories.forEach(category => {
             const categoryCard = document.createElement('div');
@@ -628,6 +640,125 @@ class StockControlApp {
         const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
         
         window.open(whatsappUrl, '_blank');
+    }
+
+    // Funciones de búsqueda
+    handleSearch(query) {
+        const searchInput = document.getElementById('item-search');
+        const clearBtn = document.getElementById('clear-search');
+        const searchResults = document.getElementById('search-results');
+        const categoriesList = document.getElementById('categories-list');
+
+        if (query.trim().length === 0) {
+            this.clearSearch();
+            return;
+        }
+
+        // Mostrar botón de limpiar
+        clearBtn.style.display = 'block';
+
+        // Buscar items que coincidan
+        const results = this.searchItems(query.trim().toLowerCase());
+        
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="search-no-results">
+                    No se encontraron items que coincidan con "${query}"
+                </div>
+            `;
+        } else {
+            searchResults.innerHTML = results.map(result => `
+                <div class="search-result-item" data-category="${result.categoryId}" data-item="${result.item}">
+                    <span class="search-result-item-name">${result.item}</span>
+                    <span class="search-result-item-category">${result.categoryName}</span>
+                </div>
+            `).join('');
+
+            // Agregar event listeners a los resultados
+            searchResults.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const categoryId = e.currentTarget.dataset.category;
+                    const itemName = e.currentTarget.dataset.item;
+                    this.navigateToItem(categoryId, itemName);
+                });
+            });
+        }
+
+        // Mostrar resultados y ocultar categorías
+        searchResults.style.display = 'block';
+        categoriesList.style.display = 'none';
+    }
+
+    searchItems(query) {
+        const results = [];
+        
+        APP_DATA.categories.forEach(category => {
+            category.items.forEach(item => {
+                if (item.toLowerCase().includes(query)) {
+                    results.push({
+                        item: item,
+                        categoryName: category.name,
+                        categoryId: category.id
+                    });
+                }
+            });
+        });
+
+        // Ordenar resultados: primero los que empiezan con la query, luego los que la contienen
+        return results.sort((a, b) => {
+            const aStartsWith = a.item.toLowerCase().startsWith(query);
+            const bStartsWith = b.item.toLowerCase().startsWith(query);
+            
+            if (aStartsWith && !bStartsWith) return -1;
+            if (!aStartsWith && bStartsWith) return 1;
+            
+            return a.item.localeCompare(b.item);
+        });
+    }
+
+    clearSearch() {
+        const searchInput = document.getElementById('item-search');
+        const clearBtn = document.getElementById('clear-search');
+        const searchResults = document.getElementById('search-results');
+        const categoriesList = document.getElementById('categories-list');
+
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        searchResults.style.display = 'none';
+        categoriesList.style.display = 'grid';
+    }
+
+    navigateToItem(categoryId, itemName) {
+        // Buscar la categoría
+        const category = APP_DATA.categories.find(cat => cat.id === categoryId);
+        if (category) {
+            AppState.currentCategory = category;
+            this.showScreen('checklist');
+            
+            // Scroll al item específico después de un breve delay para que se renderice
+            setTimeout(() => {
+                this.scrollToItem(itemName);
+            }, 100);
+        }
+    }
+
+    scrollToItem(itemName) {
+        const itemsList = document.getElementById('items-list');
+        if (!itemsList) return;
+
+        const itemCards = itemsList.querySelectorAll('.item-card');
+        itemCards.forEach(card => {
+            const itemNameElement = card.querySelector('.item-name');
+            if (itemNameElement && itemNameElement.textContent === itemName) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Destacar el item brevemente
+                card.style.border = '2px solid var(--primary)';
+                setTimeout(() => {
+                    card.style.border = '';
+                }, 2000);
+            }
+        });
     }
 }
 

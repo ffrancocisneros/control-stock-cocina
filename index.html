@@ -87,6 +87,20 @@
             </header>
             
             <main class="main-content">
+                <!-- Buscador de Items -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="item-search" placeholder="Buscar items..." class="search-input">
+                        <button id="clear-search" class="clear-search-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="search-results" class="search-results" style="display: none;">
+                        <!-- Los resultados de búsqueda se mostrarán aquí -->
+                    </div>
+                </div>
+
                 <div id="categories-list" class="categories-grid">
                     <!-- Las categorías se cargarán dinámicamente -->
                 </div>
