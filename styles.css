@@ -723,3 +723,61 @@ body {
 .btn-whatsapp:hover {
     background: #20ba5a;
 }
+
+/* Controles de cantidad y unidad para estado "Poco" */
+.poco-details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--background);
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quantity-controls,
+.unit-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 120px;
+}
+
+.quantity-controls label,
+.unit-controls label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.quantity-select,
+.unit-select {
+    padding: 0.5rem;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.quantity-select:focus,
+.unit-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
+/* Responsive para controles de cantidad */
+@media (max-width: 480px) {
+    .poco-details {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .quantity-controls,
+    .unit-controls {
+        min-width: auto;
+    }
+}

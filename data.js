@@ -216,7 +216,7 @@ const AppState = {
     currentControl: {
         date: '',
         shift: '',
-        items: {}
+        items: {} // Estructura: { item: { state: 'poco', quantity: 3, unit: 'paquetes' } }
     },
     previousControl: null,
     lastCategoryId: null

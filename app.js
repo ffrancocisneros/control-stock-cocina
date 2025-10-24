@@ -206,9 +206,10 @@ class StockControlApp {
         
         // Calcular progreso
         const totalItems = AppState.currentCategory.items.length;
-        const completedItems = AppState.currentCategory.items.filter(item => 
-            AppState.currentControl.items[item] !== undefined
-        ).length;
+        const completedItems = AppState.currentCategory.items.filter(item => {
+            const itemState = AppState.currentControl.items[item];
+            return itemState && itemState.state;
+        }).length;
         
         const progressPercent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
         
@@ -222,20 +223,43 @@ class StockControlApp {
             itemCard.className = 'item-card';
             
             const currentState = AppState.currentControl.items[item] || null;
+            const isPocoSelected = currentState && currentState.state === 'poco';
             
             itemCard.innerHTML = `
                 <div class="item-name">${item}</div>
                 <div class="item-options">
-                    <button class="option-btn hay ${currentState === 'hay' ? 'selected' : ''}" data-item="${item}" data-state="hay">
+                    <button class="option-btn hay ${currentState && currentState.state === 'hay' ? 'selected' : ''}" data-item="${item}" data-state="hay">
                         <i class="fas fa-check"></i> Hay
                     </button>
-                    <button class="option-btn poco ${currentState === 'poco' ? 'selected' : ''}" data-item="${item}" data-state="poco">
+                    <button class="option-btn poco ${isPocoSelected ? 'selected' : ''}" data-item="${item}" data-state="poco">
                         <i class="fas fa-exclamation-triangle"></i> Poco
                     </button>
-                    <button class="option-btn falta ${currentState === 'falta' ? 'selected' : ''}" data-item="${item}" data-state="falta">
+                    <button class="option-btn falta ${currentState && currentState.state === 'falta' ? 'selected' : ''}" data-item="${item}" data-state="falta">
                         <i class="fas fa-times"></i> Falta
                     </button>
                 </div>
+                ${isPocoSelected ? `
+                    <div class="poco-details">
+                        <div class="quantity-controls">
+                            <label>Cantidad:</label>
+                            <select class="quantity-select" data-item="${item}">
+                                <option value="">Seleccionar</option>
+                                ${Array.from({length: 50}, (_, i) => i + 1).map(num => 
+                                    `<option value="${num}" ${currentState && currentState.quantity == num ? 'selected' : ''}>${num}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="unit-controls">
+                            <label>Unidad:</label>
+                            <select class="unit-select" data-item="${item}">
+                                <option value="">Seleccionar</option>
+                                <option value="unidades" ${currentState && currentState.unit === 'unidades' ? 'selected' : ''}>Unidades</option>
+                                <option value="porciones" ${currentState && currentState.unit === 'porciones' ? 'selected' : ''}>Porciones</option>
+                                <option value="paquetes" ${currentState && currentState.unit === 'paquetes' ? 'selected' : ''}>Paquetes</option>
+                            </select>
+                        </div>
+                    </div>
+                ` : ''}
             `;
 
             // Agregar event listeners a los botones
@@ -251,13 +275,47 @@ class StockControlApp {
                     e.target.classList.add('selected');
                     
                     // Guardar estado
-                    AppState.currentControl.items[item] = state;
+                    if (state === 'poco') {
+                        AppState.currentControl.items[item] = { state: 'poco', quantity: null, unit: null };
+                    } else {
+                        AppState.currentControl.items[item] = { state: state };
+                    }
                     Storage.saveAppState();
                     
-                    // Actualizar progreso
-                    this.updateProgress();
+                    // Re-renderizar para mostrar/ocultar controles de cantidad
+                    this.renderChecklist();
                 });
             });
+
+            // Agregar event listeners a los controles de cantidad y unidad
+            if (isPocoSelected) {
+                const quantitySelect = itemCard.querySelector('.quantity-select');
+                const unitSelect = itemCard.querySelector('.unit-select');
+                
+                if (quantitySelect) {
+                    quantitySelect.addEventListener('change', (e) => {
+                        const item = e.target.dataset.item;
+                        const quantity = parseInt(e.target.value) || null;
+                        
+                        if (AppState.currentControl.items[item]) {
+                            AppState.currentControl.items[item].quantity = quantity;
+                            Storage.saveAppState();
+                        }
+                    });
+                }
+                
+                if (unitSelect) {
+                    unitSelect.addEventListener('change', (e) => {
+                        const item = e.target.dataset.item;
+                        const unit = e.target.value || null;
+                        
+                        if (AppState.currentControl.items[item]) {
+                            AppState.currentControl.items[item].unit = unit;
+                            Storage.saveAppState();
+                        }
+                    });
+                }
+            }
 
             itemsList.appendChild(itemCard);
         });
@@ -276,9 +334,10 @@ class StockControlApp {
         if (!itemsList || !progressText || !progressBarFill) return;
         
         const totalItems = AppState.currentCategory.items.length;
-        const completedItems = AppState.currentCategory.items.filter(item => 
-            AppState.currentControl.items[item] !== undefined
-        ).length;
+        const completedItems = AppState.currentCategory.items.filter(item => {
+            const itemState = AppState.currentControl.items[item];
+            return itemState && itemState.state;
+        }).length;
         
         const progressPercent = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
         
@@ -313,7 +372,8 @@ class StockControlApp {
         
         const items = AppState.currentCategory.items;
         for (let item of items) {
-            if (!AppState.currentControl.items[item]) {
+            const itemState = AppState.currentControl.items[item];
+            if (!itemState || !itemState.state) {
                 return false;
             }
         }
@@ -363,7 +423,8 @@ class StockControlApp {
         // Verificar que todos los items de todas las categorías tengan estado
         for (let category of APP_DATA.categories) {
             for (let item of category.items) {
-                if (!AppState.currentControl.items[item]) {
+                const itemState = AppState.currentControl.items[item];
+                if (!itemState || !itemState.state) {
                     return false;
                 }
             }
@@ -375,7 +436,8 @@ class StockControlApp {
         const missing = [];
         for (let category of APP_DATA.categories) {
             for (let item of category.items) {
-                if (!AppState.currentControl.items[item]) {
+                const itemState = AppState.currentControl.items[item];
+                if (!itemState || !itemState.state) {
                     missing.push({ item, category: category.name });
                 }
             }
@@ -388,11 +450,11 @@ class StockControlApp {
 
         // Separar items por estado
         const pocoItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'poco')
-            .map(([item]) => item);
+            .filter(([item, itemState]) => itemState && itemState.state === 'poco')
+            .map(([item, itemState]) => ({ item, itemState }));
         
         const faltaItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'falta')
+            .filter(([item, itemState]) => itemState && itemState.state === 'falta')
             .map(([item]) => item);
 
         summaryResults.innerHTML = '';
@@ -445,12 +507,18 @@ class StockControlApp {
                         <div class="summary-title">HAY POCO</div>
                     </div>
                     <ul class="summary-list">
-                        ${pocoItems.map(item => `
-                            <li class="summary-item">
-                                <span class="summary-bullet">•</span>
-                                <span>${item}</span>
-                            </li>
-                        `).join('')}
+                        ${pocoItems.map(({item, itemState}) => {
+                            let displayText = item;
+                            if (itemState.quantity && itemState.unit) {
+                                displayText = `${item} - Quedan ${itemState.quantity} ${itemState.unit}`;
+                            }
+                            return `
+                                <li class="summary-item">
+                                    <span class="summary-bullet">•</span>
+                                    <span>${displayText}</span>
+                                </li>
+                            `;
+                        }).join('')}
                     </ul>
                 `;
                 summaryResults.appendChild(card);
@@ -460,11 +528,11 @@ class StockControlApp {
 
     copyList() {
         const pocoItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'poco')
-            .map(([item]) => item);
+            .filter(([item, itemState]) => itemState && itemState.state === 'poco')
+            .map(([item, itemState]) => ({ item, itemState }));
         
         const faltaItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'falta')
+            .filter(([item, itemState]) => itemState && itemState.state === 'falta')
             .map(([item]) => item);
 
         if (pocoItems.length === 0 && faltaItems.length === 0) {
@@ -485,8 +553,12 @@ class StockControlApp {
         
         if (pocoItems.length > 0) {
             listText += `2. HAY POCO:\n`;
-            pocoItems.forEach(item => {
-                listText += `   - ${item}\n`;
+            pocoItems.forEach(({item, itemState}) => {
+                let displayText = item;
+                if (itemState.quantity && itemState.unit) {
+                    displayText = `${item} - Quedan ${itemState.quantity} ${itemState.unit}`;
+                }
+                listText += `   - ${displayText}\n`;
             });
         }
 
@@ -518,11 +590,11 @@ class StockControlApp {
 
     shareWhatsApp() {
         const pocoItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'poco')
-            .map(([item]) => item);
+            .filter(([item, itemState]) => itemState && itemState.state === 'poco')
+            .map(([item, itemState]) => ({ item, itemState }));
         
         const faltaItems = Object.entries(AppState.currentControl.items)
-            .filter(([item, state]) => state === 'falta')
+            .filter(([item, itemState]) => itemState && itemState.state === 'falta')
             .map(([item]) => item);
 
         if (pocoItems.length === 0 && faltaItems.length === 0) {
@@ -543,8 +615,12 @@ class StockControlApp {
         
         if (pocoItems.length > 0) {
             message += `2. HAY POCO:\n`;
-            pocoItems.forEach(item => {
-                message += `   - ${item}\n`;
+            pocoItems.forEach(({item, itemState}) => {
+                let displayText = item;
+                if (itemState.quantity && itemState.unit) {
+                    displayText = `${item} - Quedan ${itemState.quantity} ${itemState.unit}`;
+                }
+                message += `   - ${displayText}\n`;
             });
         }
 
